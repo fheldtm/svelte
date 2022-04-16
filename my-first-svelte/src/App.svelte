@@ -1,9 +1,35 @@
 <script>
-	import { count } from './store'
-	let name = 'kim';
+	import { writable } from 'svelte/store'
+	import Todo from './Todo.svelte'
+
+	let title = ''
+	let todos = writable([])
+	let id = 0
+
+	const createTodo = () => {
+		if (!title.trim()) {
+			title = ''
+			return
+		}
+		$todos.push({
+			id,
+			title
+		})
+		$todos = $todos
+		title = ''
+		id += 1
+	}
 </script>
 
-<main>
-	<h1>Hello { $count }!</h1>
-	<button on:click={() => { $count += 1 }}>변경</button>
-</main>
+<input
+	type="text"
+	bind:value={title}
+	on:keydown={(e) => {e.key === 'Enter' && createTodo()}}
+>
+<button
+	on:click={createTodo}
+>Create Todo</button>
+
+{#each $todos as todo}
+	<Todo {todos} {todo} />
+{/each}
